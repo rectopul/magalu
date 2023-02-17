@@ -58,3 +58,34 @@ model UserImage {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model Products {
+  id            String          @unique() @default(uuid())
+  name          String
+  description   String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  Attributes    Attributes[]
+  ProductImages ProductImages[]
+
+  @@map("products")
+}
+
+model Attributes {
+  id         String   @unique() @default(uuid())
+  product    Products @relation(fields: [productsId], references: [id])
+  name       String
+  value      String
+  productsId String
+
+  @@map("attributes")
+}
+
+model ProductImages {
+  id         String   @unique @default(uuid())
+  url        String
+  product    Products @relation(fields: [productsId], references: [id])
+  productsId String
+
+  @@map("product_images")
+}
