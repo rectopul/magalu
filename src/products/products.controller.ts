@@ -17,7 +17,7 @@ export class ProductsController {
 
   @Get('create')
   @Render('pages/create-product')
-  async register(@Req() req, @Res() res){
+  async register(@Req() req, @Res() res): Promise<object>{
     try {
             
       const token = req.cookies.token || ''
@@ -38,7 +38,8 @@ export class ProductsController {
 
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
-          title: `Dashboard Unicred`,
+          page: 'product',
+          title: `Dashboard Magalu`,
           user: refreshToken.User,
           panel: true,
           userImage: refreshToken.User.UserImage?.name,
