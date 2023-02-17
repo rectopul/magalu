@@ -83,6 +83,7 @@ model Attributes {
 
 model ProductImages {
   id         String   @unique @default(uuid())
+  name       String
   url        String
   product    Products @relation(fields: [productsId], references: [id])
   productsId String
