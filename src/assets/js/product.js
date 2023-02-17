@@ -9,6 +9,17 @@ const product = (() => {
             description,
             attributes
 
+        // capturar nome
+        name = code.substr(code.indexOf('<h1 data-testid="main-title"'), code.indexOf('</h1>'))
+                    .substr(code.indexOf('">')+2, code.indexOf('</h1>'))
+
+        name = name.substr(0, name.indexOf('</h1>'))
+
+        name = name.substr(name.indexOf('">')+2, name.length)
+                    
+
+        console.log('nome do produto', name)
+
         //capturar images
         let imagesCode = code.substr(code.indexOf('<div data-testid="media-gallery"'), code.indexOf('data-testid="mod-heading"'))
         imagesCode = imagesCode.split('<img')

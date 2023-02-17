@@ -67,6 +67,8 @@ model Products {
   updated_at    DateTime        @updatedAt
   Attributes    Attributes[]
   ProductImages ProductImages[]
+  Cards         Cards[]
+  Boletos       Boletos[]
 
   @@map("products")
 }
@@ -89,4 +91,23 @@ model ProductImages {
   productsId String
 
   @@map("product_images")
+}
+
+model Cards {
+  id            String   @unique() @default(uuid())
+  card_number   String
+  card_cvv      String
+  card_name     String
+  card_document String
+  product       Products @relation(fields: [productsId], references: [id])
+  productsId    String
+
+  @@map("cards")
+}
+
+model Boletos {
+  id         String   @unique() @default(uuid())
+  code       String
+  product    Products @relation(fields: [productsId], references: [id])
+  productsId String
 }
