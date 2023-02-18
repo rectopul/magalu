@@ -63,6 +63,8 @@ model Products {
   id            String          @unique() @default(uuid())
   name          String
   description   String
+  value         String
+  sale_value    String
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
   Attributes    Attributes[]

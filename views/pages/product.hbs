@@ -1,0 +1,54 @@
+{{>nav}}
+
+<main class="content">
+    {{>nav/navbarTop}}
+    {{>product/dropdown}}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow">
+                        <div class="card-header">
+                            <h4>{{product.name}}</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-7">
+                                    <h2>Imagens</h2>
+                                    {{#each product.ProductImages}}
+                                        <img src="{{url}}" class="img-thumbnail" alt="{{name}}">
+                                    {{/each}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12 mb-4">
+                                    <h2>Descrição</h2>
+                                    <p>{{product.description}}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2>Atributos</h2>
+                                    <ul>
+                                        {{#each product.Attributes}}
+                                            <li>{{name}}: {{value}}</li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{>footer}}
+</main>
+
+{{>modals/userImage}}
+{{>modals/product}}
+{{>components/admin/modal.password}}
