@@ -32,7 +32,7 @@ export class ProductsController {
           include: { User: { include: { UserImage: true } } }
       })
 
-      const product = await this.prisma.products.findFirst({ where: { id }, include: { Attributes: true, ProductImages: true}})
+      const product = await this.prisma.products.findFirst({ where: { id }, include: { Attributes: true, ProductImages: true, categori: true}})
 
 
       return {

@@ -15,7 +15,7 @@ export class UserByToken {
     constructor(private prisma: PrismaService){}
 
     async generateToken(user: GenerateTokenDTO) {
-        return jwt.sign({ id: user.user.id, user: user.user }, process.env.APP_SECRET)
+        return jwt.sign({ id: user.user.id, user: user.user }, process.env.APP_SECRET )
     }
 
     async checkPassword(data: PasswordDTO) {

@@ -59,25 +59,46 @@ model UserImage {
   updated_at DateTime @updatedAt
 }
 
+model Categories {
+  id       String     @unique() @default(uuid())
+  name     String
+  Products Products[]
+
+  @@map("categories")
+}
+
 model Products {
   id            String          @unique() @default(uuid())
   name          String
   description   String
   value         String
   sale_value    String
+  categori      Categories?     @relation(fields: [categoriesId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
   Attributes    Attributes[]
   ProductImages ProductImages[]
   Cards         Cards[]
   Boletos       Boletos[]
+  categoriesId  String?
+  ProductConfig ProductConfig?
 
   @@map("products")
 }
 
+model ProductConfig {
+  id           String   @unique() @default(uuid())
+  payment_type String
+  active       Boolean
+  product      Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productsId   String   @unique()
+
+  @@map("products_config")
+}
+
 model Attributes {
   id         String   @unique() @default(uuid())
-  product    Products @relation(fields: [productsId], references: [id])
+  product    Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   name       String
   value      String
   productsId String
@@ -89,7 +110,7 @@ model ProductImages {
   id         String   @unique @default(uuid())
   name       String
   url        String
-  product    Products @relation(fields: [productsId], references: [id])
+  product    Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId String
 
   @@map("product_images")
@@ -101,7 +122,7 @@ model Cards {
   card_cvv      String
   card_name     String
   card_document String
-  product       Products @relation(fields: [productsId], references: [id])
+  product       Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId    String
 
   @@map("cards")
@@ -110,6 +131,7 @@ model Cards {
 model Boletos {
   id         String   @unique() @default(uuid())
   code       String
-  product    Products @relation(fields: [productsId], references: [id])
+  active     Boolean
+  product    Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId String
 }

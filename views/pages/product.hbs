@@ -15,29 +15,73 @@
 
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-12 mb-7">
-                                    <h2>Imagens</h2>
-                                    {{#each product.ProductImages}}
-                                        <img src="{{url}}" class="img-thumbnail" alt="{{name}}">
-                                    {{/each}}
-                                </div>
-                            </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <h4>Categorias</h4>
+                                            <p>{{product.categori.name}}</p>
+                                        </div>
+                                    </div>
 
-                            <div class="row">
-                                <div class="col-12 mb-4">
-                                    <h2>Descrição</h2>
-                                    <p>{{product.description}}</p>
-                                </div>
-                            </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-7">
+                                            <h2>Imagens</h2>
+                                            {{#each product.ProductImages}}
+                                                <img src="{{url}}" class="img-thumbnail" alt="{{name}}">
+                                            {{/each}}
+                                        </div>
+                                    </div>
 
-                            <div class="row">
-                                <div class="col-12">
-                                    <h2>Atributos</h2>
-                                    <ul>
-                                        {{#each product.Attributes}}
-                                            <li>{{name}}: {{value}}</li>
-                                        {{/each}}
-                                    </ul>
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <h2>Descrição</h2>
+                                            <p>{{product.description}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <h4>Atributos</h4>
+                                            <ul>
+                                                {{#each product.Attributes}}
+                                                    <li>{{name}}: {{value}}</li>
+                                                {{/each}}
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <h4>Valor</h4>
+                                            <p>{{product.value}}</p>
+                                            <h5>Valor promocional</h5>
+                                            <p>{{product.sale_value}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h2>Configuração</h2>
+
+                                    <div class="card" style="width: 18rem;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Pagamento</h5>
+                                        <p class="card-text">
+                                            <form class="product_payment">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                                                    <label class="form-check-label" for="flexSwitchCheckDefault">Boleto</label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                                                    <label class="form-check-label" for="flexSwitchCheckDefault">Cartão</label>
+                                                </div>
+                                            </form>
+                                            
+                                        </p>
+                                        <button type="button" class="btn btn-primary save-product" data-product="{{product.id}}">Salvar</button>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

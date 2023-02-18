@@ -31,8 +31,15 @@ const product = (() => {
             }
 
             const completeProduct = await (await (fetch('/admin/products/attributes', optionsAttributes))).json()
-
-            window.location.href = `/admin/products/view/${product.id}`
+            if(product.id){
+                window.location.href = `/admin/products/view/${product.id}`
+            }else{
+                return notyf.open({
+                    type: 'warning',
+                    message: `Erro ao cadastrar produto`
+                })
+            }
+                
         } catch (error) {
             console.log(error)
         }
@@ -47,11 +54,29 @@ const product = (() => {
             sale_value,
             category,
             attributes
+        //capturar categoria
+        category = code.substring(code.indexOf('breadcrumb-container'), code.indexOf('media-gallery'))
+        category = category.split('breadcrumb-item-list')
+        category = category.map(el => {
+            let clean = el.substring(el.indexOf('breadcrumb-item'), el.indexOf('</span>'))
+            clean = clean.substring(clean.indexOf('">', 3), clean.length)
+            clean = clean.substring(clean.indexOf('">', 3), clean.length)
+            clean = clean.replace(/\">/g, '')
+            return clean
+        })
 
+        category = category.filter(el => el.length > 3)
+
+        category = category.join(',')
+        //capturar valor com desconto
+        sale_value = code.substring(code.indexOf('price-value'), code.indexOf('in-cash'))
+        sale_value = sale_value.substring(sale_value.indexOf('">')+2, sale_value.indexOf('</p>'))
+        sale_value = sale_value.replace(/ /g, '').replace(/R\$/g, '')
         //capturar valor
         value = code.substring(code.indexOf('price-original'), code.indexOf('price-value'))
         value = value.substring(value.indexOf('">')+2, value.indexOf('</p>'))
-        console.log('valor: ', value)
+        value = value.replace(/ /g, '').replace(/R\$/g, '')
+        console.log('valor: ', category)
 
         //capturar atributos
         attributes = code.substr(code.indexOf('data-testid="mod-attributelist"'), code.indexOf('mod-productprice'))
@@ -113,7 +138,7 @@ const product = (() => {
         })
 
 
-        //handleCreateProduct({name, description, attributes, images})
+        handleCreateProduct({name, description, attributes, images, value, sale_value, category})
     }
     
     function handleForm(form) {

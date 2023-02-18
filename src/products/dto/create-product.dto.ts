@@ -18,6 +18,10 @@ export class CreateProductAttributesDto {
 export class CreateProductDto {
     name: string
     description: string
+    value: string
+    sale_value: string
+    category: string
+    categoriesId: string | null
     Attributes:  Attributes[]
     productImages: productImages[]
 }

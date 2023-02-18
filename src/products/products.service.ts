@@ -10,11 +10,17 @@ export class ProductsService {
   constructor(private readonly prisma: PrismaService, private readonly auth: UserByToken){}
   async create(createProductDto: CreateProductDto): Promise<Products> {
     try {
-      const product = await this.prisma.products.create({ data: {name: createProductDto.name, description: createProductDto.description}})
+      const category = await this.prisma.categories.create({data: { name: createProductDto.category }})
+      const product = await this.prisma.products.create({ data: {
+        name: createProductDto.name, 
+        description: createProductDto.description, 
+        categoriesId: category.id,
+        sale_value: createProductDto.value,
+        value: createProductDto.value
+      }})
 
       return product;
     } catch (error) {
-      console.log(error)
       throw new Error(error?.message)
     }
   }
@@ -26,7 +32,7 @@ export class ProductsService {
 
       const product = await this.prisma.products.findFirst({ 
         where: { id: attributesProductDto.productImages[0].productsId }, 
-        include: { ProductImages: true, Attributes: true}
+        include: { ProductImages: true, Attributes: true, categori: true}
       })
 
       return product;
