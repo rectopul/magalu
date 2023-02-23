@@ -10,9 +10,10 @@ import { SessionModule } from './session/session.module';
 import { UsersModule } from './users/users.module';
 import { RegisterModule } from './register/register.module';
 import { ProductsModule } from './products/products.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
-  imports: [DashboardModule, SessionModule, UsersModule, ClientsModule, AccountModule, RegisterModule, ProductsModule],
+  imports: [DashboardModule, SessionModule, UsersModule, ClientsModule, AccountModule, RegisterModule, ProductsModule, AddressModule],
   controllers: [AppController, LoginController],
   providers: [AppService],
 })

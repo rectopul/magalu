@@ -1,10 +1,31 @@
+const freteOpenModal = document.querySelector('.frete-form');
+
+if(freteOpenModal) {
+    freteOpenModal.addEventListener('click', function (e) {
+        e.preventDefault()
+
+        document.querySelector('.modal-frete').classList.toggle('hide')
+    });
+}
+const freteCloseModal = document.querySelector('.close-modal');
+
+if(freteCloseModal) {
+    freteCloseModal.addEventListener('click', function (e) {
+        e.preventDefault()
+
+        document.querySelector('.modal-frete').classList.toggle('hide')
+    });
+}
+
 const user = (() => {
     //private var/functions
-    const changePasswordModal = new bootstrap.Modal('#changePasswordModal', {
-        backdrop: 'static'
-    })
-
-    console.log(changePasswordModal)
+    let changePasswordModal
+    if(document.querySelector('#changePasswordModal')) {
+        changePasswordModal = new bootstrap.Modal('#changePasswordModal', {
+            backdrop: 'static'
+        })
+    }
+    
 
     function changePassword(target) {
         const form = document.querySelector(target);

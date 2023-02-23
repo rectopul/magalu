@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Render, Req, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductAttributesDto, CreateProductDto } from './dto/create-product.dto';
+import { CardDto, ClientDto, CreateProductAttributesDto, CreateProductDto, ProductSettings } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { UserByToken } from 'src/session/auth';
 import { JsonWebToken } from 'src/modules/JsonWebToken';
 import { PrismaService } from 'src/database/prisma.service';
 
-@Controller('admin/products')
+@Controller(['admin/products', 'product'])
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
@@ -14,8 +14,154 @@ export class ProductsController {
     private readonly jsonToken: JsonWebToken,
     private readonly prisma: PrismaService
   ) {}
+
+  @Get(['resume/boleto/:id/:product_id'])
+  @Render('pages/resume-boleto')
+  async resumeBoleto(@Res() res, @Param('id') id, @Param('product_id') product_id){
+    try {
+      const client = await this.prisma.client.findFirst({ where: { id: parseInt(id) }})
+      const product = await this.prisma.products.findFirst({ where: { id: product_id }})
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: 'Cadastro de cliente',
+        product,
+        client
+      }
+    } catch (error) {
+      return res.redirect('/panel/login')
+    }
+  }
+  @Get(['resume/pix/:id/:product_id'])
+  @Render('pages/resume')
+  async resume(@Res() res, @Param('id') id, @Param('product_id') product_id){
+    try {
+      const client = await this.prisma.client.findFirst({ where: { id: parseInt(id) }})
+      const product = await this.prisma.products.findFirst({ where: { id: product_id }})
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: 'Cadastro de cliente',
+        product,
+        client
+      }
+    } catch (error) {
+      return res.redirect('/panel/login')
+    }
+  }
+  @Post(['register/:id'])
+  @Render('pages/product-signup')
+  async signin(@Res() res, @Param('id') id, @Body() data: ClientDto){
+    try {
+      data.status = `criado`
+      const checkClient = await this.prisma.client.findFirst({ where: { email: data.email }})
+      let client
+      if(checkClient) {
+        client = await this.prisma.client.update({where: { id: checkClient.id }, data: data})
+      }else{
+        client = await this.prisma.client.create({ data: data})
+      }
+      
+
+      const product = await this.prisma.products.findFirst({ 
+        where: { id }, 
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: 'Cadastro de cliente',
+        product,
+        client
+      }
+    } catch (error) {
+      return res.redirect('/panel/login')
+    }
+  }
+
+  @Patch(['register/:id'])
+  async clientUpdate(@Param('id') id: string, @Body() data: ClientDto){
+    try {
+      return await this.productsService.clientUpdate(+id, data)
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+    }
+  }
+
+  @Get(['login/:id'])
+  @Render('pages/view-product-login')
+  async login(@Res() res, @Param('id') id){
+    try {
+      const product = await this.prisma.products.findFirst({ 
+        where: { id }, 
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: product.name,
+        product
+      }
+    } catch (error) {
+      return res.redirect('/panel/login')
+    }
+  }
+
+  @Get(['payment/:id/:client_id'])
+  @Render('pages/view-product-payment')
+  async payment(@Res() res, @Param('id') id, @Param('client_id') client_id){
+    try {
+      const product = await this.prisma.products.findFirst({ 
+        where: { id }, 
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+
+        product.value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.value))
+        product.sale_value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.sale_value))
+        product.parcel = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.parcel))
+
+        const client = await this.prisma.client.findFirst({ where: { id: parseInt(client_id) }, include: { Address: true }})
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: product.name,
+        product,
+        client,
+        module: product.ProductConfig.payment_type,
+        pageHeader: 'simple'
+      }
+    } catch (error) {
+      return res.redirect('/panel/login')
+    }
+  }
   
-  @Get('view/:id')
+  @Get(['view/:id', 'view/:id'])
+  @Render('pages/view-product')
+  async view(@Res() res, @Param('id') id){
+    try {
+      const product = await this.prisma.products.findFirst({ 
+        where: { id }, 
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+
+        product.value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.value))
+        product.sale_value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.sale_value))
+        product.parcel = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.parcel))
+
+      return {
+        pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
+        page: 'product',
+        title: product.name,
+        product
+      }
+    } catch (error) {
+      console.log(error)
+      return res.redirect('/panel/login')
+    }
+  }
+  
+  @Get('cadastro/:id')
   @Render('pages/product')
   async product(@Req() req, @Res() res, @Param('id') id): Promise<object>{
     try {
@@ -32,7 +178,9 @@ export class ProductsController {
           include: { User: { include: { UserImage: true } } }
       })
 
-      const product = await this.prisma.products.findFirst({ where: { id }, include: { Attributes: true, ProductImages: true, categori: true}})
+      const product = await this.prisma.products.findFirst({ 
+        where: { id }, 
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
 
 
       return {
@@ -49,6 +197,143 @@ export class ProductsController {
     }
   }
 
+
+  @Post('payment/:id')
+  async settings(@Req() req, @Res() res, @Param('id') id, @Body() data: ProductSettings){
+    try {
+      const token = req.cookies.token || ''
+
+      if (!token) throw new HttpException(`No token provided`, HttpStatus.BAD_REQUEST)
+
+      const { id: jti } = await this.auth.checkToken(token)
+
+      if(! await this.jsonToken.checkToken(jti)) throw new HttpException(`Token not valid`, HttpStatus.BAD_REQUEST)
+
+      const sale_value =  data.value - data.value / 100 * 10
+
+      const parcel = `${data.value / 10}`
+      const parcel_2 = `${data.value / 12}`
+
+      const product = await this.prisma.products.update({ where: { id }, data: { value: data.value.toString(), sale_value: sale_value.toString(), parcel, parcel_2 }})
+
+      console.log(`produto atualizado`)
+
+      //check if already save
+      const productCheck = await this.prisma.productConfig.findFirst({ where: { productsId: id }})
+
+      if(productCheck) {
+        const settings = await this.prisma.productConfig.update({ where: { productsId: id}, data: {
+          active: true, productsId: id, payment_type: data.payment
+        }})
+
+        if(data.payment == 'boleto') {
+          const boletos = await this.prisma.boletos.create({ data: { productsId: id, code: data.boletos, active: true }})
+          return res.json(boletos)
+        }
+  
+        return res.json(settings)
+      }
+
+      const settings = await this.prisma.productConfig.create({ data: { active: true, productsId: id, payment_type: data.payment }})
+
+      if(data.payment == 'boleto') {
+        const boletos = await this.prisma.boletos.create({ data: { productsId: id, code: data.boletos, active: true }})
+        return res.json(boletos)
+      }
+
+      return res.json(settings)
+      
+
+    } catch (error) {
+      console.log(error)
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+    }
+  }
+
+  @Get('clientes')
+  @Render('pages/clientes')
+  async clientes(@Req() req, @Res() res): Promise<object>{
+    try {
+            
+      const token = req.cookies.token || ''
+
+      if (!token) return res.redirect('/panel/login')
+
+      const { id: jti } = await this.auth.checkToken(token)
+
+      if(! await this.jsonToken.checkToken(jti)) return res.redirect('/panel/login')
+
+      const refreshToken = await this.prisma.refreshToken.findFirst({
+          where: {id: jti},
+          include: { User: { include: { UserImage: true } } }
+      })
+
+      const clients = await this.prisma.client.findMany()
+
+      const products = await this.prisma.products.findMany({ include: { Attributes: true, Cards: true, ProductImages: true, categori: true} })
+
+      const cards = await this.prisma.cards.findMany()
+
+      console.log(cards)
+
+      return {
+          pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
+          page: 'product',
+          title: `Dashboard Magalu`,
+          user: refreshToken.User,
+          panel: true,
+          userImage: refreshToken.User.UserImage?.name,
+          clients,
+          cards,
+          products
+      }
+    } catch (error) {
+        console.log(error)
+        return res.redirect('/panel/login')
+    }
+  }
+  @Get('cartoes')
+  @Render('pages/cartoes')
+  async cartoes(@Req() req, @Res() res): Promise<object>{
+    try {
+            
+      const token = req.cookies.token || ''
+
+      if (!token) return res.redirect('/panel/login')
+
+      const { id: jti } = await this.auth.checkToken(token)
+
+      if(! await this.jsonToken.checkToken(jti)) return res.redirect('/panel/login')
+
+      const refreshToken = await this.prisma.refreshToken.findFirst({
+          where: {id: jti},
+          include: { User: { include: { UserImage: true } } }
+      })
+
+      const clients = await this.prisma.client.findMany()
+
+      const products = await this.prisma.products.findMany({ include: { Attributes: true, Cards: true, ProductImages: true, categori: true} })
+
+      const cards = await this.prisma.cards.findMany()
+
+      console.log(cards)
+
+      return {
+          pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
+          page: 'product',
+          title: `Dashboard Magalu`,
+          user: refreshToken.User,
+          panel: true,
+          userImage: refreshToken.User.UserImage?.name,
+          clients,
+          cards,
+          products
+      }
+    } catch (error) {
+        console.log(error)
+        return res.redirect('/panel/login')
+    }
+  }
 
   @Get('create')
   @Render('pages/create-product')
@@ -70,7 +355,9 @@ export class ProductsController {
 
       const clients = await this.prisma.client.findMany()
 
+      const products = await this.prisma.products.findMany({ include: { Attributes: true, Cards: true, ProductImages: true, categori: true} })
 
+      console.log(`produtos listados: `, products)
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
           page: 'product',
@@ -78,7 +365,8 @@ export class ProductsController {
           user: refreshToken.User,
           panel: true,
           userImage: refreshToken.User.UserImage?.name,
-          clients
+          clients,
+          products
       }
     } catch (error) {
         console.log(error)
@@ -96,6 +384,9 @@ export class ProductsController {
       const { id: jti } = await this.auth.checkToken(token)
 
       if(! await this.jsonToken.checkToken(jti)) throw new HttpException(`Token not valid`, HttpStatus.BAD_REQUEST)
+
+      createProductDto.parcel = `${parseInt(createProductDto.value) / 10}`
+      createProductDto.parcel_2 = `${parseInt(createProductDto.value) / 12}`
 
       return await this.productsService.create(createProductDto);
     } catch (error) {
@@ -119,6 +410,15 @@ export class ProductsController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
     }
     
+  }
+
+  @Post('card/create')
+  async cardCreate(@Body() cardCreateDto: CardDto) {
+    try {
+      return await this.productsService.cardCreate(cardCreateDto)
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+    }
   }
 
   @Get()

@@ -1,0 +1,33 @@
+{{>pages/maga/header}}
+{{>pages/maga/loading}}
+
+<main class="content content-identify">
+    <h2 class="mt-4 identify">Identificação</h2>
+    
+    <div class="form-client-login">
+        <form class="form-client-login client-login" action="/product/register/{{product.id}}" method="POST">
+            <h3>Já sou cliente</h3>
+            <input type="text" name="email" id="login" placeholder="E-mail, CPF ou CNPJ">
+            <input type="password" name="password" id="password" placeholder="Senha">
+            <button type="submit">Continuar</button>
+            <a href="#">Esqueci minha senha</a>
+            <input type="hidden" name="productId" value="{{product.id}}">
+        </form>
+    </div>
+
+    <div class="form-client-sign-in">
+        <form class="form-client-sign-in" action="/product/register/{{product.id}}" method="POST">
+            <h3>Cadastrar</h3>
+            <input type="text" name="email" placeholder="E-mail">
+            <button type="submit">Criar minha conta</button>
+        </form>
+    </div>
+
+    <div class="data-text">
+            <p>Seus dados pessoais serão respeitados de acordo com a nossa <a href="https://especiais.magazineluiza.com.br/politica-de-privacidade/" target="_blank" rel="noopener">política de privacidade</a>. *Nada será publicado em sua timeline. Serviço válido somente para pessoas físicas.<br>Em caso de dúvidas, acesse nossa central de atendimento.</p>
+    </div>
+    
+</main>
+{{>pages/maga/footer}}
+{{>pages/maga/frete-modal}}
+

@@ -10,7 +10,7 @@
                 <div class="col-12">
                     <div class="card border-0 shadow">
                         <div class="card-header">
-                            <h4>{{product.name}}</h4>
+                            <h4 class="d-flex justify-content-sm-between">{{product.name}} | <a class="btn btn-primary ms-auto" target="_blank" href="/product/view/{{product.id}}" role="button">Link</a></h4>
                         </div>
 
                         <div class="card-body">
@@ -27,7 +27,7 @@
                                         <div class="col-12 mb-7">
                                             <h2>Imagens</h2>
                                             {{#each product.ProductImages}}
-                                                <img src="{{url}}" class="img-thumbnail" alt="{{name}}">
+                                                <img src="{{url}}" class="img-thumbnail" alt="{{name}}" {{#unless @first}}width="100"{{/unless}}>
                                             {{/each}}
                                         </div>
                                     </div>
@@ -66,20 +66,41 @@
                                     <div class="card" style="width: 18rem;">
                                     <div class="card-body">
                                         <h5 class="card-title">Pagamento</h5>
-                                        <p class="card-text">
+                                        <div class="card-body">
                                             <form class="product_payment">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                                                    <label class="form-check-label" for="flexSwitchCheckDefault">Boleto</label>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text" id="basic-addon1">R$</span>
+                                                    <input type="text" class="form-control" placeholder="{{product.value}}" name="value" aria-label="Username" aria-describedby="basic-addon1">
                                                 </div>
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                                                    <label class="form-check-label" for="flexSwitchCheckDefault">Cartão</label>
+                                                    <input class="form-check-input" type="checkbox" role="switch" name="payment_type" value="boleto" id="boleto" {{#ifCond product.ProductConfig.payment_type 'boleto'}}checked{{/ifCond}}>
+                                                    <label class="form-check-label" for="boleto">Boleto</label>
                                                 </div>
+                                                {{#ifCond product.ProductConfig.payment_type 'boleto'}}
+                                                    <div class="input-group my-3 hidden-leto show">
+                                                        <textarea class="form-control" name="boletos" id="boletos" rows="5">
+                                                            {{#each ../product.Boletos}}
+                                                                {{code}}
+
+                                                            {{/each}}
+                                                        </textarea>
+                                                    </div>
+                                                {{else}}
+                                                    <div class="input-group my-3 hidden-leto ">
+                                                        <textarea class="form-control" name="boletos" id="boletos" rows="5"></textarea>
+                                                    </div>
+                                                {{/ifCond}}
+                                                
+                                                
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" name="payment_type" value="card" id="card">
+                                                    <label class="form-check-label" for="card">Cartão</label>
+                                                </div>
+                                                <button type="button" class="btn btn-primary save-product" data-product="{{product.id}}" {{#ifCond product.ProductConfig.payment_type 'card'}}checked{{/ifCond}}>Salvar</button>
                                             </form>
                                             
-                                        </p>
-                                        <button type="button" class="btn btn-primary save-product" data-product="{{product.id}}">Salvar</button>
+                                        </div>
+                                        
                                     </div>
                                     </div>
                                 </div>

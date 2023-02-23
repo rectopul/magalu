@@ -1,11 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/database/prisma.service';
 import { CreateRegisterDto } from './dto/create-register.dto';
 import { UpdateRegisterDto } from './dto/update-register.dto';
 
 @Injectable()
 export class RegisterService {
-  create(createRegisterDto: CreateRegisterDto) {
-    return 'This action adds a new register';
+  constructor(private readonly prisma: PrismaService){}
+
+  async create(createRegisterDto: CreateRegisterDto) {
+    try {
+      createRegisterDto.status = `criado`
+      const client = await this.prisma.client.create({ data: createRegisterDto })
+
+      const product = await this.prisma.products.findFirst({ where: { id: createRegisterDto.productId }})
+
+      return { client, product }
+    } catch (error) {
+      console.log(error)
+      throw new Error(error?.message)
+    }
   }
 
   findAll() {

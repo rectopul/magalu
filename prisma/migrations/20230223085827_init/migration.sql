@@ -1,19 +1,65 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "users" (
+    "id" SERIAL NOT NULL,
+    "type" TEXT NOT NULL,
+    "name" TEXT,
+    "user" TEXT NOT NULL,
+    "password_hash" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-  - You are about to drop the column `mnemonic` on the `clients` table. All the data in the column will be lost.
-  - You are about to drop the column `module` on the `clients` table. All the data in the column will be lost.
-  - You are about to drop the column `secret_seed` on the `clients` table. All the data in the column will be lost.
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
-*/
--- AlterTable
-ALTER TABLE "clients" DROP COLUMN "mnemonic",
-DROP COLUMN "module",
-DROP COLUMN "secret_seed",
-ADD COLUMN     "email" TEXT,
-ADD COLUMN     "password" TEXT,
-ADD COLUMN     "phone" TEXT,
-ADD COLUMN     "user" TEXT;
+-- CreateTable
+CREATE TABLE "RefreshToken" (
+    "id" TEXT NOT NULL,
+    "hashedToken" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "revoked" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "clients" (
+    "id" SERIAL NOT NULL,
+    "user" TEXT,
+    "email" TEXT,
+    "phone" TEXT,
+    "password" TEXT,
+    "cpf" TEXT,
+    "cnpj" TEXT,
+    "ip" TEXT,
+    "data_nascimento" TEXT,
+    "status" TEXT NOT NULL,
+    "productId" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "clients_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "address" (
+    "id" TEXT NOT NULL,
+    "cep" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "number" INTEGER NOT NULL,
+    "reference" TEXT,
+    "clientId" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "UserImage" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL
+);
 
 -- CreateTable
 CREATE TABLE "categories" (
@@ -28,6 +74,8 @@ CREATE TABLE "products" (
     "description" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "sale_value" TEXT NOT NULL,
+    "parcel" TEXT,
+    "parcel_2" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "categoriesId" TEXT
@@ -63,8 +111,9 @@ CREATE TABLE "cards" (
     "card_number" TEXT NOT NULL,
     "card_cvv" TEXT NOT NULL,
     "card_name" TEXT NOT NULL,
-    "card_document" TEXT NOT NULL,
-    "productsId" TEXT NOT NULL
+    "card_document" TEXT,
+    "productsId" TEXT NOT NULL,
+    "clientId" INTEGER
 );
 
 -- CreateTable
@@ -74,6 +123,27 @@ CREATE TABLE "Boletos" (
     "active" BOOLEAN NOT NULL,
     "productsId" TEXT NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_user_key" ON "users"("user");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RefreshToken_id_key" ON "RefreshToken"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "address_id_key" ON "address"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "address_clientId_key" ON "address"("clientId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserImage_id_key" ON "UserImage"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserImage_name_key" ON "UserImage"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserImage_user_id_key" ON "UserImage"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "categories_id_key" ON "categories"("id");
@@ -100,6 +170,15 @@ CREATE UNIQUE INDEX "cards_id_key" ON "cards"("id");
 CREATE UNIQUE INDEX "Boletos_id_key" ON "Boletos"("id");
 
 -- AddForeignKey
+ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "address" ADD CONSTRAINT "address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserImage" ADD CONSTRAINT "UserImage_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_categoriesId_fkey" FOREIGN KEY ("categoriesId") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE SET NULL;
 
 -- AddForeignKey
@@ -110,6 +189,9 @@ ALTER TABLE "attributes" ADD CONSTRAINT "attributes_productsId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "product_images" ADD CONSTRAINT "product_images_productsId_fkey" FOREIGN KEY ("productsId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "cards" ADD CONSTRAINT "cards_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "clients"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "cards" ADD CONSTRAINT "cards_productsId_fkey" FOREIGN KEY ("productsId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;

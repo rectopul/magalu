@@ -37,17 +37,35 @@ model RefreshToken {
 }
 
 model Client {
-  id         Int      @id @default(autoincrement())
-  user       String?
-  email      String?
-  phone      String?
-  password   String?
-  ip         String?
-  status     String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  user            String?
+  email           String?
+  phone           String?
+  password        String?
+  cpf             String?
+  cnpj            String?
+  ip              String?
+  data_nascimento String?
+  status          String
+  productId       String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  Cards           Cards[]
+  Address         Address?
 
   @@map("clients")
+}
+
+model Address {
+  id        String  @unique() @default(uuid())
+  cep       String
+  address   String
+  number    Int
+  reference String?
+  client    Client  @relation(fields: [clientId], references: [id])
+  clientId  Int     @unique
+
+  @@map("address")
 }
 
 model UserImage {
@@ -73,6 +91,8 @@ model Products {
   description   String
   value         String
   sale_value    String
+  parcel        String?
+  parcel_2      String?
   categori      Categories?     @relation(fields: [categoriesId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
@@ -117,13 +137,16 @@ model ProductImages {
 }
 
 model Cards {
-  id            String   @unique() @default(uuid())
+  id            String    @unique() @default(uuid())
   card_number   String
   card_cvv      String
+  card_validade String
   card_name     String
-  card_document String
-  product       Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  card_document String?
+  client        Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  product       Products? @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId    String
+  clientId      Int?
 
   @@map("cards")
 }

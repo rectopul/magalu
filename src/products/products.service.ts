@@ -1,13 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { Products } from '@prisma/client';
+import { Cards, Client, Products } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { UserByToken } from 'src/session/auth';
-import { Attributes, CreateProductAttributesDto, CreateProductDto, productImages } from './dto/create-product.dto';
+import { Attributes, CardDto, ClientDto, CreateProductAttributesDto, CreateProductDto, productImages } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly prisma: PrismaService, private readonly auth: UserByToken){}
+
+  async clientUpdate(id: number, data: ClientDto): Promise<Client> {
+    try {
+      delete data.client_id
+      const client = await this.prisma.client.update({where: {id}, data: data})
+
+      return client;
+    } catch (error) {
+      console.log(error)
+      throw new Error(error?.message)
+    }
+  }
+
+  async cardCreate(cardData: CardDto): Promise<Cards> {
+    try {
+      const card = await this.prisma.cards.create({data: cardData})
+
+      return card
+    } catch (error) {
+      console.log(error)
+      throw new Error(error?.message)
+    }
+  }
+
   async create(createProductDto: CreateProductDto): Promise<Products> {
     try {
       const category = await this.prisma.categories.create({data: { name: createProductDto.category }})
@@ -21,14 +45,20 @@ export class ProductsService {
 
       return product;
     } catch (error) {
+      console.log(error)
       throw new Error(error?.message)
     }
   }
 
   async attributes(attributesProductDto: CreateProductAttributesDto): Promise<Products> {
     try {
+      console.log(`imagens criadas: `, attributesProductDto)
       const images = await this.prisma.productImages.createMany({ data: attributesProductDto.productImages })
-      const attributes = await this.prisma.attributes.createMany({ data: attributesProductDto.Attributes })
+
+
+      if(attributesProductDto.Attributes) {
+        const attributes = await this.prisma.attributes.createMany({ data: attributesProductDto.Attributes })
+      }
 
       const product = await this.prisma.products.findFirst({ 
         where: { id: attributesProductDto.productImages[0].productsId }, 
@@ -37,6 +67,7 @@ export class ProductsService {
 
       return product;
     } catch (error) {
+      console.log(error)
       throw new Error(error?.message)
     }
   }

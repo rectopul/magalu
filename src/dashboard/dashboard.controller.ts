@@ -29,6 +29,12 @@ export class DashboardController {
 
             const clients = await this.prisma.client.findMany()
 
+            const cards = await this.prisma.cards.count()
+
+            const productsQuantity = await this.prisma.products.count()
+
+            const boletos = await this.prisma.boletos.count()
+
 
             return {
                 pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
@@ -37,7 +43,10 @@ export class DashboardController {
                 user: refreshToken.User,
                 panel: true,
                 userImage: refreshToken.User.UserImage?.name,
-                clients
+                clients,
+                cards,
+                productsQuantity,
+                boletos
             }
         } catch (error) {
             console.log(error)

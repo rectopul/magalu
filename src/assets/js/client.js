@@ -300,18 +300,62 @@ const client =(() => {
         }
     }
     
+    async function handleRegister(data) {
+        try {
+            var requestOptions = {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(data),
+              };
+              
+            const request  = await fetch("/register", requestOptions)
+
+            if(!request.ok) return notyf.open({
+                type: 'warning',
+                message: `Erro ao cadastrar cliente!`
+            })
+
+            const response = await request.json()
+            ///product/register/{{product.id}}
+            return window.location.href = `/product/register/${response?.product?.id}`
+                
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function handleFormRegisterSubmit(form) {
+        const formulario = document.querySelector(form);
+
+        if(!formulario) return
+
+        formulario.addEventListener('submit', function (e) {
+            e.preventDefault()
+
+           
+
+            const data = {
+                user: formulario.elements['login'].value,
+                password: formulario.elements['password'].value,
+                productId: formulario.elements['productId'].value,
+            }
+
+            handleRegister(data)
+        });
+    }
     return {
         //public var/functions
         submit,
         sendUser,
         getFormData,
         deleteClient,
-        masks
+        masks,
+        handleFormRegisterSubmit
     }
 })()
 
+//client.handleFormRegisterSubmit('form.form-client-login.client-login')
 client.masks()
-
 client.submit(`.form-client`)
 client.submit(`.form-client-update`)
 client.sendUser(`.senduserForm`)
