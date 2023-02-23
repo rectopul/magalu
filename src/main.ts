@@ -5,6 +5,7 @@ import * as hbs from 'express-handlebars'
 import { join } from 'path'
 import { CustomHelper } from './helpers/hbs';
 import * as cookieParser from 'cookie-parser';
+import {urlencoded, json} from 'express'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,6 +22,8 @@ async function bootstrap() {
   }))
 
   app.setViewEngine('hbs')
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   await app.listen(3000);
 
