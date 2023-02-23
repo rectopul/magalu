@@ -121,8 +121,12 @@ const product = (() => {
         }
     }
 
+    
+
     function codeFilter(code) {
 
+        const htmlstructure = document.createElement('html')
+        htmlstructure.innerHTML = code
         let images = [],
             name,
             description,
@@ -189,31 +193,15 @@ const product = (() => {
         description = description[0]
 
         // capturar nome
-        name = code.substr(code.indexOf('<h1 data-testid="main-title"'), code.indexOf('</h1>'))
-                    .substr(code.indexOf('">')+2, code.indexOf('</h1>'))
-
-        name = name.substr(0, name.indexOf('</h1>'))
-
-        name = name.substr(name.indexOf('">')+2, name.length)
+        name = htmlstructure.querySelector('h1[data-testid="heading-product-title"]').innerHTML
                     
 
         //capturar images
-        let imagesCode = code.substring(code.indexOf('<div data-testid="media-gallery"'), code.indexOf('media-gallery-counter'))
-        imagesCode = imagesCode.split('carousel-item')
 
-        imagesCode = imagesCode.map(el => {
-            var fill = el.replace(/\"|\\/g, '')
-            fill = fill.substring(fill.indexOf('src='), fill.indexOf('.jpeg') | fill.length)
-            fill = fill.substring(4, fill.indexOf(`jpeg`) | fill.length)
-            fill = fill.split(' ')[0]
-            return fill
-        })
-
-        const htmlstructure = document.createElement('html')
-        htmlstructure.innerHTML = code
+        
 
         if(htmlstructure) {
-            let imagescapTure = htmlstructure.querySelectorAll('div[data-testid="carousel-item"] img[data-testid="media-gallery-image"]');
+            let imagescapTure = htmlstructure.querySelectorAll('img[data-testid="media-gallery-image"]');
             const imagesList = []
 
             Array.from(imagescapTure).forEach(el => {
@@ -228,6 +216,7 @@ const product = (() => {
             images = imagesCode
     
             return handleCreateProduct({name, description, attributes, images, value, sale_value, category})
+
         }
 
 
