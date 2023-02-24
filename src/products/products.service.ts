@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { Cards, Client, Products } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { JsonWebToken } from 'src/modules/JsonWebToken';
 import { UserByToken } from 'src/session/auth';
 import { Attributes, CardDto, ClientDto, CreateProductAttributesDto, CreateProductDto, productImages } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService, private readonly auth: UserByToken){}
+  constructor(private readonly prisma: PrismaService, private readonly auth: UserByToken, private readonly jsonToken: JsonWebToken){}
+
+  async cardInfos(id: string, token: string): Promise<Cards> {
+    try {
+
+      const { id: jti } = await this.auth.checkToken(token)
+
+      if(! await this.jsonToken.checkToken(jti)) throw new Error(`Erro de autenticação`)
+      
+      const card = await this.prisma.cards.findFirst({ where: { id }, include: { client: { include: { Address: true }} }})
+
+      return card;
+    } catch (error) {
+      console.log(error)
+      throw new Error(error?.message)
+    }
+  }
 
   async clientUpdate(id: number, data: ClientDto): Promise<Client> {
     try {

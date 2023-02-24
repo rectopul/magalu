@@ -13,6 +13,7 @@ export class AddressController {
     try {
       return await this.addressService.create(createAddressDto);
     } catch (error) {
+      console.log(`erro ao cadastrar endereço: `, error, createAddressDto)
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
     }
     

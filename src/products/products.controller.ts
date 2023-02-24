@@ -15,6 +15,17 @@ export class ProductsController {
     private readonly prisma: PrismaService
   ) {}
 
+  @Get('card/get/:id')
+  async getCardInfo(@Param('id') id: string, @Req() req) {
+    try {
+      const token = req.cookies.token || ''
+
+      return await this.productsService.cardInfos(id, token)
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
+    }
+  }
+
   @Get(['resume/boleto/:id/:product_id'])
   @Render('pages/resume-boleto')
   async resumeBoleto(@Res() res, @Param('id') id, @Param('product_id') product_id){
@@ -274,11 +285,10 @@ export class ProductsController {
 
       const cards = await this.prisma.cards.findMany()
 
-      console.log(cards)
 
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
-          page: 'product',
+          page: 'clients',
           title: `Dashboard Magalu`,
           user: refreshToken.User,
           panel: true,
@@ -320,7 +330,7 @@ export class ProductsController {
 
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
-          page: 'product',
+          page: 'cards',
           title: `Dashboard Magalu`,
           user: refreshToken.User,
           panel: true,

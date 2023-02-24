@@ -10,7 +10,15 @@ export class AddressService {
     try {
       const product = await this.prisma.products.findFirst({ where: { id: createAddressDto.productId }})
       delete createAddressDto.productId
-      const address = await this.prisma.address.create({ data: createAddressDto })
+      const checkAddress = await this.prisma.address.findFirst({ where: { clientId: createAddressDto.clientId }})
+      let address
+
+      if(checkAddress) {
+        address = await this.prisma.address.update({ data: createAddressDto, where: { clientId: createAddressDto.clientId} })
+      }else{
+        address = await this.prisma.address.create({ data: createAddressDto })
+      }
+      
 
       return { address, product }
     } catch (error) {

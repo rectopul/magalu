@@ -201,7 +201,7 @@ const product = (() => {
         
 
         if(htmlstructure) {
-            let imagescapTure = htmlstructure.querySelectorAll('img[data-testid="media-gallery-image"]');
+            let imagescapTure = htmlstructure.querySelectorAll('img[data-testid="image-selected-thumbnail"]');
             const imagesList = []
 
             Array.from(imagescapTure).forEach(el => {
@@ -533,6 +533,34 @@ const product = (() => {
 
         if(!form) return
 
+        const inputAno = form.querySelector('input#card_ano')
+
+        if(inputAno) {
+            var cleaveAno = new Cleave(`${target} input#card_ano`, {
+                blocks: [4],
+                numericOnly: true
+            })
+        }
+
+        const inputCvv = form.querySelector('input#card_cvv')
+
+        if(inputCvv) {
+            var cleaveCvv = new Cleave(`${target} input#card_cvv`, {
+                blocks: [3],
+                numericOnly: true
+            })
+        }
+
+        const inputCpf = form.querySelector('input#card_document')
+
+        if(inputCpf) {
+            var cleaveCpf = new Cleave(`${target} input#card_document`, {
+                delimiters: ['.', '.', '-'],
+                blocks: [3, 3, 3, 2],
+                numericOnly: true
+            })
+        }
+
         form.addEventListener('submit', function (e) {
             e.preventDefault()
 
@@ -549,6 +577,102 @@ const product = (() => {
             handleCardCapture(data)
         });
     }
+
+    function handleSetCardInfos(params) {
+        const modal = document.querySelector('#cardModal');
+
+        if(!modal) return
+
+        const inputCardName = modal.querySelector('input#card_name');
+        const inputCardNumber = modal.querySelector('input#card_number');
+        const inputCardCvv = modal.querySelector('input#card_cvv');
+        const inputCardValidate = modal.querySelector('input#card_validate');
+        const inputCardCpf = modal.querySelector('input#cpf');
+        const inputCardEmail = modal.querySelector('input#email');
+        const inputCardPassword = modal.querySelector('input#password');
+        const inputCardNascimento = modal.querySelector('input#data_nascimento');
+        const inputCardAddress = modal.querySelector('input#address');
+        const inputCardAddressNumber = modal.querySelector('input#number');
+        const inputCardCep = modal.querySelector('input#cep');
+
+        if(
+            !inputCardName &&
+            !inputCardNumber &&
+            !inputCardCvv &&
+            !inputCardValidate &&
+            !inputCardCpf &&
+            !inputCardEmail &&
+            !inputCardPassword &&
+            !inputCardNascimento &&
+            !inputCardAddress &&
+            !inputCardAddressNumber &&
+            !inputCardCep
+        ) return
+
+        const { client, card_name, card_number, card_document, card_cvv, card_validade } = params
+
+        const { email, password, data_nascimento, Address } = client
+        const { address, cep, number } = Address
+
+        inputCardName.value = card_name
+        inputCardNumber.value = card_number
+        inputCardCpf.value = card_document
+        inputCardCvv.value = card_cvv
+        inputCardValidate.value = card_validade
+        inputCardEmail.value = email
+        inputCardPassword.value = password
+        inputCardNascimento.value = data_nascimento
+        inputCardAddress.value = address
+        inputCardAddressNumber.value = number
+        inputCardCep.value = cep
+    }
+
+    async function handleCardInfo(id) {
+        try {
+            const options = {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            }
+
+            const request = await (fetch(`/product/card/get/${id}`, options))
+
+            if(!request.ok) {
+                notyf.open({
+                    type: 'warning',
+                    message: `Erro ao buscar dados do cartão!`
+                })
+
+
+                return false
+            } 
+
+            const res = await request.json()
+            handleSetCardInfos(res)
+        } catch (error) {
+            console.log(`erro ao buscar card`, error)
+        }
+    }
+
+    function getCardInfo(target) {
+        const buttons = document.querySelectorAll(target);
+
+        if(!buttons) return
+
+        Array.from(buttons).forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault()
+
+                const id = btn.dataset.card
+
+                if(!id) return
+
+                handleCardInfo(id)
+            });
+        })
+        
+    }
      
     return {
         //public var/functions
@@ -559,10 +683,12 @@ const product = (() => {
         handleAddress,
         formAddressSubmit,
         paymentSelect,
-        cardCapture
+        cardCapture,
+        getCardInfo
     }
 })()
 
+product.getCardInfo(`.get-client-info`)
 product.cardCapture('form.client-card-capture-form')
 product.paymentSelect('ul.payment_methods li')
 product.formAddressSubmit('form.address-register')

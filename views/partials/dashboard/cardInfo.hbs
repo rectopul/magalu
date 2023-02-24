@@ -15,9 +15,10 @@
         <a type="button" href="/product/view/{{id}}" target="_blank" class="btn btn-mini btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Tooltip on top">
             Ver produto
         </a>
-        <a type="button" href="/product/view/{{id}}" target="_blank" class="btn btn-mini btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Tooltip on top">
+        <a type="button" href="#" target="_blank" class="btn btn-mini btn-secondary get-client-info" data-card="{{id}}" data-bs-toggle="modal" data-bs-target="#cardModal">
             Ver completo
         </a>
     </td>
 </tr>
 {{/each}}
+{{>modals/modalCard}}
