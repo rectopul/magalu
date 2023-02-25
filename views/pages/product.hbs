@@ -96,6 +96,24 @@
                                                     <input class="form-check-input" type="checkbox" role="switch" name="payment_type" value="card" id="card">
                                                     <label class="form-check-label" for="card">Cartão</label>
                                                 </div>
+
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" name="payment_type" value="pix" id="pix" {{#ifCond product.ProductConfig.payment_type 'pix'}}checked{{/ifCond}}>
+                                                    <label class="form-check-label" for="boleto">Pix</label>
+                                                </div>
+                                                {{#ifCond product.ProductConfig.payment_type 'pix'}}
+                                                    <div class="input-group my-3 hidden-leto show">
+                                                        <textarea class="form-control" name="pix_key" id="pix" rows="5">
+                                                            {{#each ../product.Boletos}}
+                                                                {{code}}
+                                                            {{/each}}
+                                                        </textarea>
+                                                    </div>
+                                                {{else}}
+                                                    <div class="input-group my-3 hidden-leto ">
+                                                        <textarea class="form-control" name="pix_key" id="pix" rows="5"></textarea>
+                                                    </div>
+                                                {{/ifCond}}
                                                 <button type="button" class="btn btn-primary save-product" data-product="{{product.id}}" {{#ifCond product.ProductConfig.payment_type 'card'}}checked{{/ifCond}}>Salvar</button>
                                             </form>
                                             
