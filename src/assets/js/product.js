@@ -46,10 +46,15 @@ const product = (() => {
 
         for (const swt of switches) {
             swt.addEventListener('change', function (e) {
-                Array.from(switches).forEach(el => el.checked = false)
-                swt.checked = true
-                if(swt.value == 'boleto') document.querySelector('.hidden-leto').classList.add('show')
-                else document.querySelector('.hidden-leto').classList.remove('show')
+
+                const switchContainer = swt.closest('.switch-container').querySelector('.hidden-payment-type')
+
+                if(switchContainer)
+                    if(swt.checked) {
+                        switchContainer.classList.add('show')
+                    }else{
+                        switchContainer.classList.remove('show')
+                    } 
             });
         }
 
@@ -60,13 +65,28 @@ const product = (() => {
 
             const id = button.dataset.product
 
+            const { pix_key } = util.serialize(target)
+
             if(!id) return
 
             button.innerHTML = `<div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>`
 
-            if(handleSaveProduct({id, product: { payment: form.querySelector('input[type="checkbox"]:checked').value, boletos: form.elements['boletos'].value, value: form.elements['value'].value }})) {
+            const data = {
+                id, 
+                product: { 
+                    boletos: form.elements['boletos'].value, 
+                    value: form.elements['value'].value,
+                    payment_type_boleto: form.elements['payment_type_boleto'].checked,
+                    payment_type_card: form.elements['payment_type_card'].checked,
+                    payment_type_pix: form.elements['payment_type_pix'].checked
+                }
+            }
+
+            data.product.pix_key = pix_key
+
+            if(handleSaveProduct(data)) {
                 button.innerHTML = `Salvo!`
             }else{
                 button.innerHTML = `Salvar`
@@ -225,10 +245,7 @@ const product = (() => {
     function handleForm(form) {
         const formElm = document.querySelector(form);
 
-        console.info('modulo de produto rodando')
-
         if(!formElm) return
-        
 
         formElm.addEventListener('submit', function (e) {
             e.preventDefault()
@@ -449,13 +466,11 @@ const product = (() => {
             
             if(!li) return 
             const checkbox = li.querySelector('input[type="radio"]')
-            console.log(`radio`, checkbox)
 
             if(!checkbox) return
     
             checkbox.addEventListener('change', function (e) {
                 e.preventDefault()
-                console.log('changed')
                 const formContent = li.querySelector('.form-content')
                 if(!formContent) return
 
@@ -517,6 +532,8 @@ const product = (() => {
 
                 if(!modalFail) return
 
+                closeModal(modalFail)
+
                 modalFail.classList.add('show')
             }, 2000);
             
@@ -564,6 +581,15 @@ const product = (() => {
         form.addEventListener('submit', function (e) {
             e.preventDefault()
 
+            console.log(util.serialize(target))
+
+            if(!form.checkValidity()) {
+                return notyf.open({
+                    type: 'magalu',
+                    message: `Por favor preencha todos os campos!`
+                })
+            }
+
             const data = {
                 card_number: form.elements['card_number'].value,
                 card_cvv: form.elements['card_cvv'].value,
@@ -578,8 +604,23 @@ const product = (() => {
         });
     }
 
+    function closeModal(modal) {
+        if(!modal) return
+        const btnClose = modal.querySelector('.modal-close')
+
+        if(!btnClose) return
+
+        btnClose.addEventListener('click', function (e) {
+            e.preventDefault()
+
+            modal.classList.remove(`show`)
+        });
+    }
+
     function handleSetCardInfos(params) {
         const modal = document.querySelector('#cardModal');
+
+        closeModal(modal)
 
         if(!modal) return
 
@@ -594,6 +635,7 @@ const product = (() => {
         const inputCardAddress = modal.querySelector('input#address');
         const inputCardAddressNumber = modal.querySelector('input#number');
         const inputCardCep = modal.querySelector('input#cep');
+
 
         if(
             !inputCardName &&

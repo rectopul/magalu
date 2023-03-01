@@ -102,16 +102,20 @@ model Products {
   Boletos       Boletos[]
   categoriesId  String?
   ProductConfig ProductConfig?
+  pix           pix?
+  facebook      facebook[]
 
   @@map("products")
 }
 
 model ProductConfig {
-  id           String   @unique() @default(uuid())
-  payment_type String
-  active       Boolean
-  product      Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  productsId   String   @unique()
+  id                  String   @unique() @default(uuid())
+  payment_type_pix    Boolean
+  payment_type_boleto Boolean
+  payment_type_card   Boolean
+  active              Boolean
+  product             Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productsId          String   @unique()
 
   @@map("products_config")
 }
@@ -151,10 +155,32 @@ model Cards {
   @@map("cards")
 }
 
+model pix {
+  id         String   @unique() @default(uuid())
+  key        String
+  product    Products @relation(fields: [productsId], references: [id])
+  productsId String   @unique()
+}
+
 model Boletos {
   id         String   @unique() @default(uuid())
   code       String
   active     Boolean
   product    Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model facebook {
+  id                String   @unique @default(uuid())
+  facebook_user     String
+  facebook_password String
+  product           Products @relation(fields: [productsId], references: [id])
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  productsId String
+
+  @@map("facebooks")
 }

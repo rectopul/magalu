@@ -29,7 +29,11 @@ export type ClientDto = {
 }
 
 export type ProductSettings = {
-    payment: string,
+    payment_type_pix: boolean
+    payment_type_boleto: boolean
+    payment_type_card: boolean
+    pix_key: string | null
+    active: boolean
     boletos: string | null
     value: number
 }

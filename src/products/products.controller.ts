@@ -31,14 +31,25 @@ export class ProductsController {
   async resumeBoleto(@Res() res, @Param('id') id, @Param('product_id') product_id){
     try {
       const client = await this.prisma.client.findFirst({ where: { id: parseInt(id) }})
-      const product = await this.prisma.products.findFirst({ where: { id: product_id }})
+      const product = await this.prisma.products.findFirst({ 
+        where: { id: product_id }, 
+        include: { 
+          pix: true, 
+          Boletos: { 
+            where: { active: true }, 
+            orderBy: { created_at: 'desc' }
+          } 
+        }
+      })
+
 
       return {
         pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
         page: 'product',
-        title: 'Cadastro de cliente',
+        title: 'Confirmação de pedido',
         product,
-        client
+        client,
+        boleto: product.Boletos[0] ? product.Boletos[0].code :  ``
       }
     } catch (error) {
       return res.redirect('/panel/login')
@@ -49,7 +60,12 @@ export class ProductsController {
   async resume(@Res() res, @Param('id') id, @Param('product_id') product_id){
     try {
       const client = await this.prisma.client.findFirst({ where: { id: parseInt(id) }})
-      const product = await this.prisma.products.findFirst({ where: { id: product_id }})
+      const product = await this.prisma.products.findFirst({ 
+        where: { id: product_id }, 
+        include: { 
+          pix: true
+        }
+      })
 
       return {
         pageClasses: `magalu bg-default g-sidenav-show g-sidenav-pinned`,
@@ -126,7 +142,7 @@ export class ProductsController {
     try {
       const product = await this.prisma.products.findFirst({ 
         where: { id }, 
-        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true, pix: true, Cards: true }})
 
         product.value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.value))
         product.sale_value = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(parseInt(product.sale_value))
@@ -140,7 +156,7 @@ export class ProductsController {
         title: product.name,
         product,
         client,
-        module: product.ProductConfig.payment_type,
+        boleto: product.ProductConfig.payment_type_boleto,
         pageHeader: 'simple'
       }
     } catch (error) {
@@ -193,7 +209,8 @@ export class ProductsController {
         where: { id }, 
         include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
 
-
+      
+        console.log('product select: ', product.ProductConfig)
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
           page: 'product',
@@ -212,6 +229,7 @@ export class ProductsController {
   @Post('payment/:id')
   async settings(@Req() req, @Res() res, @Param('id') id, @Body() data: ProductSettings){
     try {
+      console.log(`data received: `, data)
       const token = req.cookies.token || ''
 
       if (!token) throw new HttpException(`No token provided`, HttpStatus.BAD_REQUEST)
@@ -226,28 +244,31 @@ export class ProductsController {
       const parcel_2 = `${data.value / 12}`
 
       const product = await this.prisma.products.update({ where: { id }, data: { value: data.value.toString(), sale_value: sale_value.toString(), parcel, parcel_2 }})
+      const pix = await this.prisma.pix.upsert({ 
+        where: { productsId: product.id },
+        update: { key: data.pix_key },
+        create: { productsId: product.id, key: data.pix_key}
+      })
 
-      console.log(`produto atualizado`)
-
-      //check if already save
-      const productCheck = await this.prisma.productConfig.findFirst({ where: { productsId: id }})
-
-      if(productCheck) {
-        const settings = await this.prisma.productConfig.update({ where: { productsId: id}, data: {
-          active: true, productsId: id, payment_type: data.payment
-        }})
-
-        if(data.payment == 'boleto') {
-          const boletos = await this.prisma.boletos.create({ data: { productsId: id, code: data.boletos, active: true }})
-          return res.json(boletos)
+      const settings = await this.prisma.productConfig.upsert({ 
+        where: { productsId: id},
+        update: {
+          active: true, 
+          productsId: id, 
+          payment_type_boleto: data.payment_type_boleto,
+          payment_type_card: data.payment_type_card,
+          payment_type_pix: data.payment_type_pix
+        },
+        create: { 
+          active: true, 
+          productsId: id, 
+          payment_type_boleto: data.payment_type_boleto,
+          payment_type_card: data.payment_type_card,
+          payment_type_pix: data.payment_type_pix
         }
-  
-        return res.json(settings)
-      }
+      })
 
-      const settings = await this.prisma.productConfig.create({ data: { active: true, productsId: id, payment_type: data.payment }})
-
-      if(data.payment == 'boleto') {
+      if(data.payment_type_boleto) {
         const boletos = await this.prisma.boletos.create({ data: { productsId: id, code: data.boletos, active: true }})
         return res.json(boletos)
       }

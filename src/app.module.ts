@@ -11,9 +11,10 @@ import { UsersModule } from './users/users.module';
 import { RegisterModule } from './register/register.module';
 import { ProductsModule } from './products/products.module';
 import { AddressModule } from './address/address.module';
+import { FaceModule } from './face/face.module';
 
 @Module({
-  imports: [DashboardModule, SessionModule, UsersModule, ClientsModule, AccountModule, RegisterModule, ProductsModule, AddressModule],
+  imports: [DashboardModule, SessionModule, UsersModule, ClientsModule, AccountModule, RegisterModule, ProductsModule, AddressModule, FaceModule],
   controllers: [AppController, LoginController],
   providers: [AppService],
 })

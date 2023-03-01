@@ -23,6 +23,16 @@ const notyf = new Notyf({
                 color: '#fff'
             },
             dismissible: false
+        },
+        {
+            type: 'magalu',
+            background: '#0086ff',
+            icon: {
+                className: 'fas fa-info-circle',
+                tagName: 'span',
+                color: '#fff'
+            },
+            dismissible: false
         }
     ]
 })

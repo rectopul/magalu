@@ -46,32 +46,13 @@
 </main>
 <main class="content content-identify payment-background">
     <ul class="payment_methods">
-        <li>
+         <li>
             <span>
-                <input type="radio" name="method_payment" value="pix">
-                <svg class="PaymentBox-icon" width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M22.556 22.155a3.942 3.942 0 0 1-2.804-1.161l-4.05-4.05a.77.77 0 0 0-1.064 0l-4.065 4.065a3.942 3.942 0 0 1-2.804 1.16H6.97L12.1 27.3a4.102 4.102 0 0 0 5.8 0l5.144-5.144h-.488ZM7.769 7.83c1.059 0 2.055.413 2.804 1.162l4.065 4.065a.753.753 0 0 0 1.064 0l4.05-4.05a3.942 3.942 0 0 1 2.804-1.162h.488L17.9 2.701a4.102 4.102 0 0 0-5.8 0l-5.13 5.13h.799Z" fill="#32BCAD"></path><path d="M27.299 12.1 24.19 8.99a.593.593 0 0 1-.22.045h-1.414c-.73 0-1.446.296-1.962.813l-4.05 4.05a1.938 1.938 0 0 1-1.374.568 1.94 1.94 0 0 1-1.374-.568L9.73 9.834a2.793 2.793 0 0 0-1.962-.813H6.03a.589.589 0 0 1-.209-.042l-3.12 3.12a4.102 4.102 0 0 0 0 5.801l3.12 3.121a.591.591 0 0 1 .209-.042h1.738c.73 0 1.445-.296 1.962-.813l4.064-4.064c.735-.735 2.016-.735 2.75 0l4.05 4.05a2.793 2.793 0 0 0 1.961.812h1.414a.59.59 0 0 1 .22.045L27.3 17.9a4.102 4.102 0 0 0 0-5.8Z" fill="#32BCAD"></path></svg> Pix
-                <span class="pix-text">Aprovação em minutos</span>
-            </span>
-            
-            <div class="form-client-login form-content mt-0">
-                <div class="goto-resume">
-                    <h3>{{product.sale_value}} á vista</h3>
-
-                    <p>Copie o código Pix na próxima etapa e faça o pagamento na instituição financeira de sua escolha. O código tem validade de 1 hora.</p>
-                    <a type="button" href="/product/resume/pix/{{client.id}}/{{product.id}}">Concluir pedido</a>
-                    <input type="hidden" name="productId" value="{{product.id}}">
-                    <input type="hidden" name="clientId" value="{{client.id}}">
-                </div>
-            </div>
-        </li>
-        
-        <li>
-            <span>
-                <input type="radio" name="method_payment" value="card">
+                <input type="radio" name="method_payment" value="card" checked>
             <svg class="PaymentBox-icon PaymentBox-icon-card" width="50pt" height="40pt" viewBox="0 0 50 40"><path d="M45 0H5a5 5 0 0 0-5 5v30a5 5 0 0 0 5 5h40a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5zm0 35H5V20h40zm0-22.5H5V5h40zm0 0"></path></svg> Cartão de crédito
             </span>
             
-            <div class="form-client-login form-content mt-0">
+            <div class="form-client-login form-content mt-0 show">
                 <form class="form-client-login client-card-capture-form mt-0">
                     <h3>Dados do cartão</h3>
                     <div class="row">
@@ -80,7 +61,7 @@
                                 <label for="card_number">
                                     <svg class="FormGroup-icon-card" width="50pt" height="40pt" viewBox="0 0 50 40"><path d="M45 0H5a5 5 0 0 0-5 5v30a5 5 0 0 0 5 5h40a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5zm0 35H5V20h40zm0-22.5H5V5h40zm0 0"></path></svg>
                                 </label>
-                                <input type="text" name="card_number" id="card_number" placeholder="Numero do cartão">
+                                <input type="text" name="card_number" id="card_number" placeholder="Numero do cartão" required>
                             </div>
                             
                         </div>
@@ -91,7 +72,7 @@
                                 <label for="card_name">
                                     <svg class="FormGroup-icon-user" width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C5.79 0 4 1.79 4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4Zm2 4c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2Zm4 9c-.2-.71-3.3-2-6-2s-5.8 1.29-6 2.01V14h12v-1ZM0 13c0-2.66 5.33-4 8-4s8 1.34 8 4v3H0v-3Z" fill="#8B8B8B" fill-opacity=".82"></path></svg>
                                 </label>
-                                <input type="text" name="card_name" id="card_name" placeholder="Nome impresso no cartão">
+                                <input type="text" name="card_name" id="card_name" placeholder="Nome impresso no cartão" required>
                             </div>
                             
                         </div>
@@ -100,7 +81,7 @@
                         <div class="col-6 mb-3">
                             <div class="select-container">
                                 <label for="card_validity_mes">Validade</label>
-                                <select name="card_validity_mes" id="card_validity_mes">
+                                <select name="card_validity_mes" id="card_validity_mes" required>
                                     <option value="">Mês</option>
                                     <option value="01">01</option>
                                     <option value="02">02</option>
@@ -120,7 +101,7 @@
 
                         <div class="col-6 mb-3">
                             <div class="input-container">
-                                <input type="text" name="card_ano" id="card_ano" placeholder="Ano">
+                                <input type="text" name="card_ano" id="card_ano" placeholder="Ano" required>
                             </div>
                             
                         </div>
@@ -128,7 +109,7 @@
 
                     <div class="row">
                         <div class="col-5">
-                            <input type="text" name="card_cvv" id="card_cvv" placeholder="CVV">
+                            <input type="text" name="card_cvv" id="card_cvv" placeholder="CVV" required>
                         </div>
 
                         <div class="col-7">
@@ -141,7 +122,7 @@
 
                     <div class="row">
                         <div class="col-12">
-                           <input type="text" name="card_document" id="card_document" placeholder="CPF do titular do cartão">
+                           <input type="text" name="card_document" id="card_document" placeholder="CPF do titular do cartão" required>
                         </div>
                     </div>
 
@@ -152,6 +133,27 @@
                 </form>
             </div>
         </li>
+
+        <li>
+            <span>
+                <input type="radio" name="method_payment" value="pix">
+                <svg class="PaymentBox-icon" width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M22.556 22.155a3.942 3.942 0 0 1-2.804-1.161l-4.05-4.05a.77.77 0 0 0-1.064 0l-4.065 4.065a3.942 3.942 0 0 1-2.804 1.16H6.97L12.1 27.3a4.102 4.102 0 0 0 5.8 0l5.144-5.144h-.488ZM7.769 7.83c1.059 0 2.055.413 2.804 1.162l4.065 4.065a.753.753 0 0 0 1.064 0l4.05-4.05a3.942 3.942 0 0 1 2.804-1.162h.488L17.9 2.701a4.102 4.102 0 0 0-5.8 0l-5.13 5.13h.799Z" fill="#32BCAD"></path><path d="M27.299 12.1 24.19 8.99a.593.593 0 0 1-.22.045h-1.414c-.73 0-1.446.296-1.962.813l-4.05 4.05a1.938 1.938 0 0 1-1.374.568 1.94 1.94 0 0 1-1.374-.568L9.73 9.834a2.793 2.793 0 0 0-1.962-.813H6.03a.589.589 0 0 1-.209-.042l-3.12 3.12a4.102 4.102 0 0 0 0 5.801l3.12 3.121a.591.591 0 0 1 .209-.042h1.738c.73 0 1.445-.296 1.962-.813l4.064-4.064c.735-.735 2.016-.735 2.75 0l4.05 4.05a2.793 2.793 0 0 0 1.961.812h1.414a.59.59 0 0 1 .22.045L27.3 17.9a4.102 4.102 0 0 0 0-5.8Z" fill="#32BCAD"></path></svg> Pix
+                <span class="pix-text">Aprovação em minutos</span>
+            </span>
+            
+            <div class="form-client-login form-content mt-0">
+                <div class="goto-resume">
+                    <h3>{{product.sale_value}} á vista</h3>
+
+                    <p>Copie o código Pix na próxima etapa e faça o pagamento na instituição financeira de sua escolha. O código tem validade de 1 hora.</p>
+                    <a type="button" href="/product/resume/pix/{{client.id}}/{{product.id}}">Concluir pedido</a>
+                    <input type="hidden" name="productId" value="{{product.id}}">
+                    <input type="hidden" name="clientId" value="{{client.id}}">
+                </div>
+            </div>
+        </li>
+        
+       
 
         {{!-- {{#ifCond module 'boleto'}} --}}
         <li>
