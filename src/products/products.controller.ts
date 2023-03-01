@@ -207,10 +207,10 @@ export class ProductsController {
 
       const product = await this.prisma.products.findFirst({ 
         where: { id }, 
-        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true }})
+        include: { Attributes: true, ProductImages: true, categori: true, ProductConfig: true, Boletos: true, pix: true }})
 
       
-        console.log('product select: ', product.ProductConfig)
+        console.log('product select: ', product)
       return {
           pageClasses: `dashboard bg-default g-sidenav-show g-sidenav-pinned`,
           page: 'product',

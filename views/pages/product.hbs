@@ -110,11 +110,11 @@
                                                         </div>
                                                         {{#ifCond product.ProductConfig.payment_type_pix true}}
                                                             <div class="input-group my-3 hidden-pix hidden-payment-type show">
-                                                                <input type="text" name="pix_key" id="pix_key" value="{{product.pix.key}}" placeholder="Chave pix">
+                                                                <input type="text" name="pix_key" id="pix_key" value="{{../product.pix.key}}" placeholder="Chave pix">
                                                             </div>
                                                         {{else}}
                                                             <div class="input-group my-3 hidden-pix hidden-payment-type">
-                                                                <input type="text" name="pix_key" id="pix_key" value="{{product.pix.key}}" placeholder="Chave pix">
+                                                                <input type="text" name="pix_key" id="pix_key" value="{{../product.pix.key}}" placeholder="Chave pix">
                                                             </div>
                                                         {{/ifCond}}
                                                     </div>

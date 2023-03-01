@@ -46,6 +46,7 @@
 </main>
 <main class="content content-identify payment-background">
     <ul class="payment_methods">
+        {{#ifCond product.ProductConfig.payment_type_card true}}
          <li>
             <span>
                 <input type="radio" name="method_payment" value="card" checked>
@@ -133,7 +134,9 @@
                 </form>
             </div>
         </li>
+        {{/ifCond}}
 
+        {{#ifCond product.ProductConfig.payment_type_pix true}}
         <li>
             <span>
                 <input type="radio" name="method_payment" value="pix">
@@ -152,10 +155,10 @@
                 </div>
             </div>
         </li>
-        
+        {{/ifCond}}
        
 
-        {{!-- {{#ifCond module 'boleto'}} --}}
+        {{#ifCond product.ProductConfig.payment_type_boleto true}}
         <li>
             <span>
                 <input type="radio" name="method_payment" value="pix">
@@ -175,7 +178,7 @@
             </div>
             
         </li>
-        {{!-- {{/ifCond}} --}}
+        {{/ifCond}}
     </ul>
 
     <div class="secure-buy">
