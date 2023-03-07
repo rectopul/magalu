@@ -112,7 +112,7 @@ model ProductConfig {
   id                  String   @unique() @default(uuid())
   payment_type_pix    Boolean
   payment_type_boleto Boolean
-  payment_type_card   Boolean
+  payment_type_card   Boolean?
   active              Boolean
   product             Products @relation(fields: [productsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productsId          String   @unique()
